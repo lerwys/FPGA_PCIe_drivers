@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/t
+END
+04-data-generator.t
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/t/04-data-generator.t
+END
+02-mpracex-abb.t
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/t/02-mpracex-abb.t
+END
+03-fifo.t
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/t/03-fifo.t
+END
+01-mprace.t
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/t/01-mprace.t
+END

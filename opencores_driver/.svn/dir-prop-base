@@ -1,0 +1,10 @@
+K 10
+svn:ignore
+V 29
+depend
+lib
+obj
+bin
+.settings
+
+END

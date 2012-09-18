@@ -1,0 +1,46 @@
+10
+
+dir
+153
+https://svn.ziti.uni-heidelberg.de/asc/mprace/trunk/perl/mprace/blib
+https://svn.ziti.uni-heidelberg.de/asc/mprace
+
+
+
+2010-07-27T14:28:16.279598Z
+130
+pschaefer@ZITI.UNI-HEIDELBERG.DE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+33c5aadc-0e08-4b5f-9657-0e6d1c3ab6bd
+
+script
+dir
+
+lib
+dir
+
+bin
+dir
+
+man1
+dir
+
+arch
+dir
+
+man3
+dir
+

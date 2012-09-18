@@ -1,0 +1,6 @@
+Revision history for Perl extension mprace.
+
+0.01  Wed Jul 22 21:36:58 2009
+	- original version; created by h2xs 1.23 with options
+		-A -n mprace
+

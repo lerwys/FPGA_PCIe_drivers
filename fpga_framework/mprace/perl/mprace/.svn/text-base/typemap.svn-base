@@ -1,0 +1,3 @@
+TYPEMAP
+Board * O_OBJECT
+DMABuffer * O_OBJECT

@@ -1,0 +1,13 @@
+K 10
+svn:ignore
+V 86
+pciDriver.h
+pciDriver.mod.c
+pciDriver.ko
+*.cmd
+.tmp_versions
+*.symvers
+
+modules.order
+
+END

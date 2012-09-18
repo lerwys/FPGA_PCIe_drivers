@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/asc/pciDriver/!svn/ver/163/trunk/include/lib
+END
+KernelMemory.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/pciDriver/!svn/ver/144/trunk/include/lib/KernelMemory.h
+END
+pciDriver_compat.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/asc/pciDriver/!svn/ver/163/trunk/include/lib/pciDriver_compat.h
+END
+PciDevice.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/asc/pciDriver/!svn/ver/87/trunk/include/lib/PciDevice.h
+END
+Exception.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/asc/pciDriver/!svn/ver/77/trunk/include/lib/Exception.h
+END
+UserMemory.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/pciDriver/!svn/ver/144/trunk/include/lib/UserMemory.h
+END
+pciDriver.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/asc/pciDriver/!svn/ver/87/trunk/include/lib/pciDriver.h
+END

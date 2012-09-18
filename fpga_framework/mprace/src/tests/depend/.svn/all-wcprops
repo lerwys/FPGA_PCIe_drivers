@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/asc/mprace/!svn/ver/131/trunk/src/tests/depend
+END
+testig.d
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testig.d
+END
+debugMPRACE2.d
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/debugMPRACE2.d
+END
+testParallelFIFO.d
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testParallelFIFO.d
+END
+testDMAInterrupts.d
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testDMAInterrupts.d
+END
+testParallelABB.d
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testParallelABB.d
+END
+testIPCserver.d
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testIPCserver.d
+END
+testABBlong.d
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testABBlong.d
+END
+mini-read-dma.d
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/mini-read-dma.d
+END
+mini-write-pio.d
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/mini-write-pio.d
+END
+testIPCclient.d
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testIPCclient.d
+END
+testABBconfig.d
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testABBconfig.d
+END
+testDGen.d
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testDGen.d
+END
+v6dmatest.d
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/v6dmatest.d
+END
+DataGenerator.d
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/DataGenerator.d
+END
+testFIFO.d
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testFIFO.d
+END
+mini-write-dma.d
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/mini-write-dma.d
+END
+testABB.d
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testABB.d
+END
+testSendDescriptorList.d
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testSendDescriptorList.d
+END
+testGetDesignID.d
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testGetDesignID.d
+END
+testOffset.d
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testOffset.d
+END
+testBuffersizes.d
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/asc/mprace/!svn/ver/131/trunk/src/tests/depend/testBuffersizes.d
+END
+min_testSendDescriptorList.d
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/asc/mprace/!svn/ver/131/trunk/src/tests/depend/min_testSendDescriptorList.d
+END
+test_reset_timeout.d
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/test_reset_timeout.d
+END
+testMPRACE2.d
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testMPRACE2.d
+END
+testNew.d
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testNew.d
+END
+mini-read-pio.d
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/mini-read-pio.d
+END
+testSGDMA.d
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/asc/mprace/!svn/ver/130/trunk/src/tests/depend/testSGDMA.d
+END

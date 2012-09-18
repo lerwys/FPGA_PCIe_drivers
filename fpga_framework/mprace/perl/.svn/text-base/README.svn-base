@@ -1,0 +1,4 @@
+These are perl-bindings for mprace. Work in progress.
+
+You can run the test-suite using:
+make test TEST_VERBOSE=1

@@ -1,0 +1,40 @@
+10
+
+dir
+175
+https://svn.ziti.uni-heidelberg.de/asc/pciDriver/trunk/src
+https://svn.ziti.uni-heidelberg.de/asc/pciDriver
+
+
+
+2011-07-07T13:35:42.126356Z
+175
+pschaefer@ZITI.UNI-HEIDELBERG.DE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+638d1213-ed90-43c8-939a-fad19b70b358
+
+tests
+dir
+
+other_tests
+dir
+
+lib
+dir
+
+driver
+dir
+

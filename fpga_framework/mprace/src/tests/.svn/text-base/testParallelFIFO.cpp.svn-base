@@ -1,0 +1,322 @@
+/**
+ * This is the test case for the ABB board with parallel access
+ *
+ * @file testParallelFIFO.cpp
+ * @author Michael Stapelberg
+ * @date 2009-08-03
+ *
+ */
+#include <string>
+#include <iostream>
+#include <exception>
+#include <pthread.h>
+#include <getopt.h>
+#include <cstdlib>
+#include <cstdio>
+
+#include <mprace/Board.h>
+#include <mprace/DMABuffer.h>
+#include <mprace/ABB.h>
+#include <mprace/util/Timer.h>
+
+#include "DataGenerator.hpp"
+
+using namespace std;
+using namespace mprace;
+
+/** Number of times the DMA read or write will be done to get decent performance
+   measurement values */
+#define NLOOPS 		10
+// #define NLOOPS 		50
+
+/** Minimum size of the buffer used for DMA */
+static int MIN_SIZE = 1024;  //2048;
+//static int MIN_SIZE = 1024;
+
+/** Maximum size of the buffer used for DMA */
+static int MAX_BLOCKRAM = 8192;
+
+
+#define BOARD_NR 	0
+
+#ifdef OLD_REGISTERS
+	#define FPGA_ADDR (0x0)
+#else
+	#define FPGA_ADDR (0x8000 >> 2)
+#endif
+
+#define FIFO_ADDR 	(0x0)
+#define TX_CTRL		(0x1E)
+#define CLEAR_TIMEOUT	(0x0A)
+
+/** Converts the given double to megabytes */
+#define TO_MiB(bytes) ((bytes) / (1024 * 1024))
+
+/** Output verbose messages like which bytes failed in each test */
+static bool verbose = false;
+
+/** Global instance of the board */
+Board *board;
+
+/**
+ *
+ * Tests a DMA read by first filling the DMA buffer with the given pattern and then
+ * verifying that the buffer read via DMA is the same as when read via PIO.
+ *
+ * @param verbose_override If set to true, this function won't print anything
+ * despite the value of verbose
+ * @return The number of errors detected
+ *
+ */
+static unsigned int test_dma_read(Board *board, DMABuffer &buf,
+				  unsigned int offset, unsigned int size,
+				  bool verbose_override = false)
+{
+	unsigned int i;
+	unsigned int errors = 0;
+	mprace::util::Timer timer;
+	uint32_t generated_pattern[size];
+
+	if (verbose)
+		cout << "Testing FIFO read at " << offset << " with " << size << " bytes, verbose_override = " << verbose_override << endl;
+
+	/* Clear the timeout bit */
+	//board->setReg(TX_CTRL, CLEAR_TIMEOUT);
+
+	/* Clear the DMA buffer */
+	for (i = 0; i < size; i++)
+		buf[i] = i;
+
+	cout << "Doing DMAFIFO..." << endl;
+	cout << "FIFO status : " << board->getReg(0x24) << endl;
+	board->readDMAFIFO(FIFO_ADDR + offset, buf, size, 0, true, true);
+	cout << "DMA done" << endl;
+
+#if 0
+	/* Compare the values by reading without DMA */
+	for (i = 0; i < size; i++) {
+		uint8_t should = buf[i],
+			is = (!use_fifo ? board->read(FPGA_ADDR + offset + i) : generated_pattern[i]);
+
+		if (is == should)
+			continue;
+
+		errors++;
+		if (verbose)
+			printf("read: offset %02x, value %02x (card) != %x (buffer)\n", offset + i, is, should);
+	}
+#endif
+
+	if (verbose)
+		cout << "Iteration done, " << errors << " errors" << endl;
+
+	return errors;
+}
+
+#if 0
+/**
+ * Tests DMA read performance by reading NLOOPS time and averaging the time
+ * needed for that.
+ *
+ */
+static void test_dma_read_performance(Board *board, DMABuffer &buf,
+				      unsigned int offset, unsigned int size)
+{
+	unsigned int i;
+	mprace::util::Timer timer;
+
+	if (use_pio_only) {
+		cout << "Skip DMA performance test because PIO mode is enabled" << endl;
+		return;
+	}
+
+	timer.start();
+	for (i = 0; i < NLOOPS; i++) {
+		/* Read, but don't increment the offset on the FPGA, so
+		   we don't go out of bounds (we read more often than
+		   we reserved buffer space) for */
+
+		pthread_mutex_lock(&dma_read_mutex);
+		if (!use_fifo)
+			board->readDMA(FPGA_ADDR + offset, buf, size, 0, false, true);
+		else board->readDMAFIFO(FIFO_ADDR + offset, buf, size, 0, false, true);
+		pthread_mutex_unlock(&dma_read_mutex);
+	}
+	timer.stop();
+
+	/* averaged time for a DMA read */
+	double time = (timer.asSeconds() / NLOOPS);
+	/* prevent division by zero */
+	double performance;
+
+	if (time < 1e-12)
+		performance = 0;
+	else performance = TO_MiB((size * sizeof(int)) / time);
+
+	cout << "DMA read performance: " << performance << " MiB" << endl;
+}
+#endif
+
+
+/**
+ * This thread calls test_dma_read with the different buffer sizes repeatedly
+ *
+ */
+static void *dma_read_thread(void *unused)
+{
+	unsigned int size, iteration;
+	/* "Global" error counter over all iterations this thread does.
+	   It gets returned via pthread_exit, that's why we have to allocate it. */
+	unsigned int *errors;
+	errors = (unsigned int*)calloc(1, sizeof(unsigned int));
+
+	cout << "FIFO read thread" << endl;
+
+	for (iteration = 0; iteration < NLOOPS; iteration++) {
+		for (size = MIN_SIZE; size <= (MAX_BLOCKRAM / 2); size *= 2) {
+			/* Create a DMA buffer */
+			DMABuffer buf(*board, (size * sizeof(int)), DMABuffer::USER);
+
+			/* test the DMA read */
+			*errors += test_dma_read(board, buf, 0, size);
+
+			/* measures the DMA read performance */
+			//test_dma_read_performance(board, buf, 0, size);
+		}
+	}
+
+	pthread_exit((void*)errors);
+}
+
+static void *data_generator_thread(void *unused)
+{
+	sleep(1);
+
+	cout << "Starting data generator..." << endl;
+
+	mprace::ABBDataGenerator gen(board);
+
+	int sz = 2048; /* size of the pattern in bytes */
+
+	uint16_t pattern[32] = {0xFF0E, 0x5062, 0x7083, 0x90A4,
+				0xB0C5, 0xD0E6, 0xF007, 0x1020,
+
+				0x00AA, 0x00BB, 0x00CC, 0x00DD,
+				0xAA00, 0xBB00, 0xCC00, 0xDD00,
+
+				0xAAAA, 0xBBBB, 0xCCCC, 0xDDDD,
+				0x9999, 0x8888, 0x7777, 0x6666,
+				0x5555, 0x4444, 0x3333, 0x2222,
+				0x1111, 0x0000, 0x1100, 0x2200};
+
+	uint16_t *bigpattern = (uint16_t*)malloc(sz * 2 * sizeof(uint16_t));
+	if (bigpattern == NULL) {
+		cerr << "malloc failed" << endl;
+		exit(1);
+	}
+	/* Fill up the big pattern buffer repeatedly with our 16 byte pattern */
+	for (int i = 0; i < sz * 2; i++) {
+		int w = i % 32;
+		bigpattern[i] = pattern[w];
+	}
+
+	cout << "Letting the data generator loop until nearly full..." << endl;
+
+	gen.storePattern(true, 2 * sz, bigpattern);
+
+	/* Check for the nearly full bit repeatedly */
+	while ((board->getReg(0x24)  & 0x2) == 0) {
+		cout << "Waiting until its full" << endl;
+		sleep(1);
+	}
+
+	cout << "Sleeping five seconds..." << endl;
+	sleep(5);
+	gen.stop();
+
+}
+
+
+/**
+ * The program can be called with -v or --verbose to enable verbose output.
+ * -h or --help will print help.
+ *
+ * @return Returns success (0) if the test was passed without errors and
+ * failure (1) if otherwise.
+ *
+ */
+int main(int argc, char *argv[]) {
+	bool test_read = true;
+	bool test_write = true;
+	pthread_t read_thread, dgen_thread;
+	unsigned int *retval_read, *retval_dgen;
+	int c, option_index = 0;
+	static struct option long_options[] = {
+		{"verbose", 0, 0, 'v'},
+		{"help", 0, 0, 'h'},
+		{0, 0, 0, 0}
+	};
+
+	while ((c = getopt_long(argc, argv, "v", long_options, &option_index)) != -1) {
+		switch (c) {
+			case 'v':
+				verbose = true;
+				break;
+			case 'h':
+				cout << "Syntax: " << argv[0] << " [-v]" << endl;
+				cout << "-v\tEnable verbose output" << endl;
+				exit(EXIT_SUCCESS);
+				break;
+			default:
+				exit(EXIT_FAILURE);
+				break;
+		}
+	}
+
+	/* seed random() */
+	srand(time(NULL));
+
+	/* calibrate Timers */
+	mprace::util::Timer::calibrate();
+
+	/* Generally output trailing zeros when printing floats */
+	cout.setf(ios::fixed, ios::floatfield);
+
+	cout << "Creating object for ABB board " << BOARD_NR << endl;
+	board = new ABB(BOARD_NR);
+	cout << "Starting threads for ABB Parallel test" << endl;
+
+	cout << "Resetting FIFO..." << endl;
+	board->setReg(0x24, 0x0A);
+	cout << "Clearing the fifo..." << endl;
+	board->setReg(0x24, 0x0A);
+	/* As long as the status register is 0, the FIFO is still clearing */
+	while (board->getReg(0x24) == 0) {
+		/* wait until the clearing of the FIFO is finished */
+	}
+	cout << "Data Generator is " <<((board->getReg(0x08)&0x0020)?"":"NOT ") << "present." << endl;
+	cout << "HW version  " << hex << board->getReg(0x0) << endl;
+
+	cout << "FIFO status : " << board->getReg(0x24) << endl;
+
+	/* Create the threads which will run in parallel for some time */
+	pthread_create(&read_thread, NULL, dma_read_thread, NULL);
+
+	pthread_create(&dgen_thread, NULL, data_generator_thread, NULL);
+
+	/* Wait for termination of both threads */
+	pthread_join(read_thread, (void**)&retval_read);
+
+	pthread_join(dgen_thread, (void**)&retval_dgen);
+
+	cout << "Read thread returned " << *retval_read << " errors" << endl;
+
+	bool retval = ((*retval_read == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
+	if (retval != 0) {
+		cout << "FIFO status : " << board->getReg(0x24) << endl;
+		cout << "THERE HAVE BEEN ERRORS!" << endl;
+		if (!verbose)
+			cout << "Re-run this testcase with option -v to enable verbose output" << endl;
+	}
+	return retval;
+}

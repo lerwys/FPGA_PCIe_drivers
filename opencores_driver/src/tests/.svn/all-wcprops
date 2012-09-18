@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/asc/pciDriver/!svn/ver/127/trunk/src/tests
+END
+testCinterface.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/pciDriver/!svn/ver/127/trunk/src/tests/testCinterface.c
+END
+testCppInterface.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/asc/pciDriver/!svn/ver/127/trunk/src/tests/testCppInterface.cpp
+END
+testCompatInterface.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/asc/pciDriver/!svn/ver/43/trunk/src/tests/testCompatInterface.cpp
+END
+testPciDriver.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/pciDriver/!svn/ver/39/trunk/src/tests/testPciDriver.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/pciDriver/!svn/ver/51/trunk/src/tests/Makefile
+END

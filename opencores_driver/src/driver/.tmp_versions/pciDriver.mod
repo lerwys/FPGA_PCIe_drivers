@@ -1,0 +1,2 @@
+/home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/pciDriver.ko
+/home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/base.o /home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/int.o /home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/umem.o /home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/kmem.o /home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/sysfs.o /home/lerwys/FPGA_PCIe/opencores_pcie_fpga_interface/pciDriver/src/driver/ioctl.o

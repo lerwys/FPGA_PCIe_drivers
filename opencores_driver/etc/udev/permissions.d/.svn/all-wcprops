@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/asc/pciDriver/!svn/ver/28/trunk/etc/udev/permissions.d
+END
+60-udev.fpga.permissions
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/asc/pciDriver/!svn/ver/28/trunk/etc/udev/permissions.d/60-udev.fpga.permissions
+END

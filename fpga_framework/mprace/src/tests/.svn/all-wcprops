@@ -1,0 +1,209 @@
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/asc/mprace/!svn/ver/153/trunk/src/tests
+END
+testParallelFIFO.cpp~
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/asc/mprace/!svn/ver/130/trunk/src/tests/testParallelFIFO.cpp~
+END
+testig.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/asc/mprace/!svn/ver/31/trunk/src/tests/testig.cpp
+END
+testParallelFIFO.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/mprace/!svn/ver/82/trunk/src/tests/testParallelFIFO.cpp
+END
+debugMPRACE2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/asc/mprace/!svn/ver/53/trunk/src/tests/debugMPRACE2.cpp
+END
+testParallelABB.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/mprace/!svn/ver/112/trunk/src/tests/testParallelABB.cpp
+END
+testDMAInterrupts.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/asc/mprace/!svn/ver/102/trunk/src/tests/testDMAInterrupts.cpp
+END
+testIPCserver.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/asc/mprace/!svn/ver/50/trunk/src/tests/testIPCserver.cpp
+END
+testABBlong.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/asc/mprace/!svn/ver/80/trunk/src/tests/testABBlong.cpp
+END
+IPCshared.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/mprace/!svn/ver/50/trunk/src/tests/IPCshared.h
+END
+testABBconfig.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/asc/mprace/!svn/ver/13/trunk/src/tests/testABBconfig.cpp
+END
+testDGen.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/112/trunk/src/tests/testDGen.cpp
+END
+v6dmatest.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/asc/mprace/!svn/ver/123/trunk/src/tests/v6dmatest.cpp
+END
+DataGenerator.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/asc/mprace/!svn/ver/84/trunk/src/tests/DataGenerator.cpp
+END
+icap_dpr.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/153/trunk/src/tests/icap_dpr.cpp
+END
+mini-write-dma.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/asc/mprace/!svn/ver/130/trunk/src/tests/mini-write-dma.cpp
+END
+testABB.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/mprace/!svn/ver/44/trunk/src/tests/testABB.cpp
+END
+DataGenerator.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/mprace/!svn/ver/112/trunk/src/tests/DataGenerator.hpp
+END
+testGetDesignID.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/mprace/!svn/ver/130/trunk/src/tests/testGetDesignID.cpp
+END
+min_testSendDescriptorList.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/asc/mprace/!svn/ver/146/trunk/src/tests/min_testSendDescriptorList.cpp
+END
+test_reset_timeout.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/asc/mprace/!svn/ver/130/trunk/src/tests/test_reset_timeout.cpp
+END
+testNew.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/asc/mprace/!svn/ver/130/trunk/src/tests/testNew.cpp
+END
+testDGen.cpp.ddrFIFO
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/asc/mprace/!svn/ver/130/trunk/src/tests/testDGen.cpp.ddrFIFO
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/asc/mprace/!svn/ver/146/trunk/src/tests/Makefile
+END
+mini-read-dma.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/mprace/!svn/ver/130/trunk/src/tests/mini-read-dma.cpp
+END
+mini-write-pio.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/asc/mprace/!svn/ver/130/trunk/src/tests/mini-write-pio.cpp
+END
+testIPCclient.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/asc/mprace/!svn/ver/49/trunk/src/tests/testIPCclient.cpp
+END
+testFIFO.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/130/trunk/src/tests/testFIFO.cpp
+END
+testSendDescriptorlist.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/asc/mprace/!svn/ver/146/trunk/src/tests/testSendDescriptorlist.cpp
+END
+testOffset.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/asc/mprace/!svn/ver/112/trunk/src/tests/testOffset.cpp
+END
+testNew.cpp~
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/130/trunk/src/tests/testNew.cpp~
+END
+testBuffersizes.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/asc/mprace/!svn/ver/146/trunk/src/tests/testBuffersizes.cpp
+END
+testMPRACE2.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/asc/mprace/!svn/ver/94/trunk/src/tests/testMPRACE2.cpp
+END
+mini-read-pio.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/asc/mprace/!svn/ver/130/trunk/src/tests/mini-read-pio.cpp
+END
+testSGDMA.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/44/trunk/src/tests/testSGDMA.cpp
+END

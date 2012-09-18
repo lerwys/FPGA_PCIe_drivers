@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/blib/arch/auto/mprace
+END
+mprace.so
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/blib/arch/auto/mprace/mprace.so
+END
+mprace.bs
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/blib/arch/auto/mprace/mprace.bs
+END
+.exists
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/blib/arch/auto/mprace/.exists
+END

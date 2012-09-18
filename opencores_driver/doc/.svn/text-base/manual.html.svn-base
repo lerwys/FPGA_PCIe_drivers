@@ -1,0 +1,659 @@
+<html>
+<head>
+ <title>PciDriver Manual - version 0.1</title>
+</head>
+<body>
+
+<!-- Title -->
+<h1>PciDriver Manual</h1>
+<span>Version 0.2</span><br/>
+<span>Guillermo Marcus</span><br/>
+
+<!-- Link to sections -->
+<div>
+<h2>Index</h2>
+<ol>
+ <li><a href="#credits">Credits</a></li>
+ <li><a href="#intro">Introduction</a></li>
+ <li><a href="#install">Installation</a></li>
+ <li><a href="#cint">Using the Driver - C++ interface</a></li>
+ <li><a href="#cppint">Using the Driver - C interface</a></li>
+ <li><a href="#ioctl">Using the Driver - IOctl interface</a></li>
+ <li><a href="#sysfs">Using the Driver - SysFS interface</a></li>
+ <li><a href="#dev">Developer's Manual</a></li>
+</ol>
+</div>
+
+<!-- Section -->
+<div id="credits">
+<h2>Credits</h2>
+<p>This driver was developed by Guillermo Marcus at the FPGA Group, Lehrstuhl f&uuml;r Informatik V - 
+University of Mannheim, as a complete rewrite of previous work from Christian Hinkelbein and Matthias M&uuml;ller.</p>
+</div>
+
+<!-- Section -->
+<div id="intro">
+<h2>Introduction</h2>
+
+<p>This is a generic PCI device driver for Linux, designed for kernel 2.6.9 and higher. It provides the following
+functionality:</p>
+<ul>
+ <li>Mapping of the PCI BARs (Base Address Registers) to user space.</li>
+ <li>Access to the device's configuration space.</li>
+ <li>Kernel memory allocation and management on demand</li>
+ <li>User memory locking and mapping, generating the Scatter/Gather Lists.</li>
+ <li>Hotplug capability.</li>
+ <li>Dynamic chardev assignment.</li>
+ <li>Recognized devices can be added without reloading the driver.</li>
+ <li>SysFS support to report Driver/Device status.</li>
+ <li>C / C++ user interfaces.</li>
+</ul>
+
+<p>For support in 64-bit platforms, please uncomment the required line(s) in the main Makefile.</p>
+</div>
+
+<!-- Section -->
+<div id="install">
+<h2>Installation</h2>
+<p>First, unpack the driver and compile:</p>
+
+<pre><code>
+	$ tar xvzf pciDriver.tar.gz
+	$ cd pciDriver
+	$ make all
+</code></pre>
+
+<p>For regular use, you may want to do:</p>
+
+<pre><code>
+	$ su
+	# make install
+</code></pre>
+
+<p>This will copy the driver to the <code>/lib/modules/(uname -r)/extra</code> directory, the library files (both dynamic and static) to the <code>/usr/lib</code> directory, and will install the defaults permissions for the device in <code>/etc/udev/permissions.d</code>.</p>
+
+<p>The driver itself does not requires any special library, but it is highly recommended that the provided interfaces
+being used for easy development and future compability. To load the driver:</p>
+
+<pre><code>
+	$ su
+	# insmod pciDriver/src/driver/pciDriver.ko
+</code></pre>
+
+<p>To unload it</p>
+
+<pre><code>
+	$ su
+	# rmmod pciDriver
+</code></pre>
+
+<p>To use in your application, you need to make an explicit include to the <code>pciDriver/include</code> directory
+by adding it to the compiler and include the pciDriver library by adding -lpcidriver to your linker. If you didn't install the library in the default directory using <code>make install</code>, you need to add the <code>pciDriver/lib</code> directory to the linker path both at link and runtime, by example, by adding it to the <code>LD_LIBRARY_PATH</code> variable. Therefore, a C++ test program
+that uses the driver interface will be compiled as</p>
+
+<pre><code>
+	$ g++ -IpciDriver/include -LpciDriver/lib -lpcidriver -o test.bin test.cpp
+</code></pre>
+
+<p>To add the library path and execute the test</p>
+
+<pre><code>
+	$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<path>/pciDriver/lib
+	$ ./test.bin
+</code></pre>
+
+<p>If your card has no native support from the driver, you can add the Vendor and Device ID dynamically to the driver after
+loading it, by issuing the command</p>
+
+<pre><code>
+	# echo "vendor device" > /sys/bus/pci/drivers/pciDriver/new_id
+</code></pre>
+
+You can obtain a list of the PCI devices in your machine, and then the vendor and device IDs, with:
+
+<pre><code>
+	# lspci
+	# pcitweak -l
+
+Example:
+	# lspci
+02:03.0 Class ffff: PLX Technology, Inc. 9080 (rev 03)
+03:03.0 VGA compatible controller: ATI Technologies Inc RV280 [Radeon 9200 SE] (rev 01)
+03:03.1 Display controller: ATI Technologies Inc RV280 [Radeon 9200 SE] (Secondary) (rev 01)
+
+this is ours>>>>> 04:02.0 Co-processor: PLX Technology, Inc. PCI <-> IOBus Bridge (rev ab)
+         note this^^^^^^^
+
+04:03.0 SCSI storage controller: Adaptec AIC-7902 U320 (rev 03)
+
+	# pcitweak -l
+	PCI: 04:02:0: chip 10b5,9656 card 2151,1087 rev ab class 0b,40,00 hdr 00
+                     vendor^^^^,^^^^device 
+</code></pre>
+
+
+</div>
+
+<!-- Section -->
+<div id="cppint">
+<h2>Using the Driver - C++ interface</h2>
+
+<p>The C++ interface is the clearest way to access the PCI driver. For each PCI device, a <code>PciDevice</code> object 
+is created on demand. Afterwards, the device can be opened, regions mapped, and memory allocated. On finish, regions must be unmapped,
+memory deallocated (by deleting the descriptors), and the device closed. The <code>PciDevice</code> object is the main
+point to interfacing to the driver, and it can perform several operations, as listed below. For a working example, check
+the <code>src/tests/testCppInterface.cpp</code> source code.</p>
+
+<table>
+<tr>
+<td span=2><b>PciDevice</b></td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>PciDevice(int number)</code></td>
+<td>Devices are enumerated and correspond to their device number as in <code>/dev/fpgaX</code>. The constructor
+creates a device that represents the corresponding device node as enumerated by the driver.</td>
+</tr>
+
+<tr>
+<td><code>open()</code></td>
+<td>Open the device for access.</td>
+</tr>
+
+<tr>
+<td><code>close()</code></td>
+<td>Closes the device for access.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void *mmapBAR(unsigned int BAR)</code></td>
+<td>Maps a BAR region into user space. Returns a pointer to the mapped area, NULL is cannot access the info,
+or throws an exception if it fails to mmap the area.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void unmapBAR(unsigned int BAR, void *ptr)</code></td>
+<td>Releases previously mapped BAR areas. As a BAR can be mapped several times, the specific pointer of the
+region being released is needed, as well as its corresponding BAR.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>XX readConfigXX(unsigned int addr)</code></td>
+<td>XX represents the data type, being 'Byte' (8-bits), 'Word' (16-bits) or 'DWord' (32-bits). The function
+reads from the configuration space and returns the value.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>writeConfigXX(unsigned int addr, val)</code></td>
+<td>Similar to read, performs a write to the configuration area with the specified data width.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>KernelMemory& allocKernelMemory(unsigned int size)</code></td>
+<td>Allocates an amount of Kernel Memory specified by the <code>size</code> parameter and returns a KernelMemory 
+object describing the allocated area. Throws an exception on fail.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>UserMemory& mapUserMemory(void *mem, unsigned int size)</code></td>
+<td>Maps a User Memory area pointed by <code>mem</code> of size <code>size</code> and returna a UserMemory object
+describing its mapping. Throws an exception on fail.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void waitForInterrupt()</code></td>
+<td>This is a blocking call, that waits until the next interrupt from the device is issued. When there is a high interrupt rate, several interrupts would be merged, so do not expect an accurate count of interrupts in this case. Check the developer section if this is an issue.</td>
+</tr>
+
+</table>
+
+
+<table>
+<tr>
+<td span=2><b>KernelMemory</b></td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>~KernelMemory()</code></td>
+<td>Releases (unmap and deallocate) the Kernel Memory referenced by this descriptor. Note there is no public constructor,
+as the constructor is protected and only available to the PciDevice class.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>unsigned long getPhysicalAddress()</code></td>
+<td>Returns the Physical Address of this Kernel Memory area. This is the address as seen by the device. 
+This is NOT an address the application can reference as a normal pointer, use getBuffer instead.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>unsigned long getSize()</code></td>
+<td>Returns the size in bytes of this Kernel Memory area.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void *getBuffer()</code></td>
+<td>Returns a pointer to the kernel memory as mapped to the user space. Accessing this area by the application is
+accessing directly the Kernel Memory area.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void sync(dir)</code></td>
+<td>Tells the kernel to synchronizes the Memory contents in the specified direction. This should do nothing in x86
+architectures, but it is better to be aware of this need.</td>
+</tr>
+
+</table>
+
+<table>
+<tr>
+<td span=2><b>UserMemory</b></td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>~UserMemory()</code></td>
+<td>Unmaps (unlock and deallocate SG list) the UserMemory referenced by this descriptor. Note there is no public constructor,
+as the constructor is protected and only available to the PciDevice class.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>unsigned int getSGcount()</code></td>
+<td>Returns the number of entries in the Scatter / Gather list of this descriptor.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>unsigned long getSGentryAddress(unsigned int entry)</code></td>
+<td>Returns the physical address of the entry <code>entry</code> in the SG list. This is the address of 
+this entry as seen by the device.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>unsigned long getSGentrySize(unsigned int entry)</code></td>
+<td>Returns the size in bytes of the entry <code>entry</code> in the SG list.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void sync(dir)</code></td>
+<td>Tells the kernel to synchronizes the Memory contents in the specified direction. This should do nothing in x86
+architectures, but it is better to be aware of this need.</td>
+</tr>
+
+</table>
+
+
+</div>
+
+<!-- Section -->
+<div id="cint">
+<h2>Using the Driver - C interface</h2>
+
+<p>The C interface provides fucntionality equivalent to the C++ interface for code that is not object oriented. It is a separate implementation from the the C++ interface, meaning they are no wrapping functions but actual implementations. This gives the opportunity to the compiler to do as many optimizations as it want to (most compilers do not allow inter-language optimizations). However, the interface has a struct/datatype and function organization that closely resembles the C++ interface. Functions are divided in several groups, as they deal with the PCI device, PCI accesses, Kernel or User Memory.</p>
+
+<p>Typical usage involves opening a device, mapping BARs, allocating/mapping memory (kernel or user memory), using them from/to user space, and finally releasing and closing the device. A detailed description of the data structures and functions of this interface follows.</p>
+
+<table>
+
+<tr>
+<td span=2><b>Data Structures</b></td>
+</tr>
+
+<!-- struct -->
+<tr>
+<td><b>pd_device_t</b></td>
+<td>Represents a PCI device</td>
+</tr>
+<tr>
+<td><pre><code>typedef struct {
+	int handle;
+	int device;
+	char name[50];
+	pthread_mutex_t mmap_mutex;
+} pd_device_t;
+</code></pre></td>
+<td>
+<b>handle: </b>PCI device handle. Identifies this device.<br/>
+<b>device: </b>PCI device number. Device ID number.<br/>
+<b>name: </b>Name of the node in the filesystem (typ: /dev/fpgaX)<br/>
+<b>mmap_mutex: </b>Mutex used by the library to ensure secuential actions during mmaping.<br/>
+</td>
+</tr>
+
+<!-- struct -->
+<tr>
+<td><b>pd_umem_sgentry_t</b></td>
+<td>An entry in the Scatter/Gather list of a User Memory descriptor</td>
+</tr>
+<tr>
+<td><pre><code>typedef struct {
+	unsigned long addr;
+	unsigned long size;
+} pd_umem_sgentry_t;
+</code></pre></td>
+<td>
+<b>addr: </b>The Physical Address of this entry. The first entry may not be page aligned, as it includes the initial offset.<br/>
+<b>size: </b>The Size in bytes of this entry.<br/>
+</td>
+</tr>
+
+<!-- struct -->
+<tr>
+<td><b>pd_umem_t</b></td>
+<td>Represents a block of User Memory mapped to a PCI device</td>
+</tr>
+<tr>
+<td><pre><code>typedef struct {
+	unsigned long vma;
+	unsigned long size;
+	int handle_id;
+	int nents;
+	pd_umem_sgentry_t *sg;
+	pd_device_t *pci_handle;
+} pd_umem_t;
+</code></pre></td>
+<td>
+<b>vma: </b>The virtual address (address in user space) of the represented block.<br/>
+<b>size: </b>Size of the block in bytes.<br/>
+<b>handle_id: </b>ID number returned by the driver. It identifies this mapping.<br/>
+<b>nents: </b>Number of entries in the sg list. This number can be less than the number of pages, if the driver supports merging.<br/>
+<b>sg: </b>List of SG entries, each one represents a contiguous block of physical memory, where this user memory is located.<br/>
+<b>pci_handle: </b>The descriptor of the device mapping and using this memory desriptor.<br/>
+<b></b><br/>
+</td>
+</tr>
+
+<!-- struct -->
+<tr>
+<td><b>pd_kmem_t</b></td>
+<td>Represents a block of contiguous Kernel Memory allocated and mapped for a PCI device</td>
+</tr>
+<tr>
+<td><pre><code>typedef struct {
+	unsigned long pa;
+	unsigned long size;
+	void *mem;
+	int handle_id;
+	pd_device_t *pci_handle;
+} pd_kmem_t;
+</code></pre></td>
+<td>
+<b>pa: </b>Physical Address of this kernel memory block.<br/>
+<b>size: </b>Size of the block in bytes.<br/>
+<b>mem: </b>A pointer in user space, where this block is mapped. Use this pointer if you want to access the contents of this memory block.<br/>
+<b>handle_id: </b>ID number returned by the driver. It identifies this mapping.<br/>
+<b>pci_handle: </b>The descriptor of the device mapping and using this memory desriptor.<br/>
+</td>
+</tr>
+
+</table>
+
+<!-- Subsection -->
+<table>
+<tr>
+<td span=2><b>PCI device functions</b></td>
+</tr>
+<!-- function -->
+<tr>
+<td><code>int pd_open( int dev, pd_device_t *pci_handle );</code></td>
+<td>Opens a PCI device identified by the number <code>dev</code>, which is the number in the device file name <code>/dev/fpgaX</code>, and initializes the structure pointed to by <code>pci_handle</code> accordingly.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_close( pd_device_t *pci_handle );</code></td>
+<td>Closes a PCI device identified by the descriptor <code>pci_handle</code>.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_waitForInterrupt(pd_device_t *pci_handle );</code></td>
+<td>Waits until the device identified by <code>pci_handle</code> generates an interrupt.</td>
+</tr>
+
+</table>
+
+<!-- Subsection -->
+<table>
+<tr>
+<td span=2><b>PCI Access functions</b></td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_getID( pd_device_t *pci_handle );</code></td>
+<td>Returns a 32-bit integer with the Vendor and Device ID of the device.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_getBARsize( pd_device_t *pci_handle, unsigned int bar );</code></td>
+<td>Returns the size in bytes of the specified BAR of the device.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>void *pd_mapBAR( pd_device_t *pci_handle, unsigned int bar );</code></td>
+<td>Maps the BAR area of a device into user space, and returns a user space pointer to it.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_unmapBAR( pd_device_t *pci_handle, unsigned int bar, void *ptr );</code></td>
+<td>Releases the mapping between the specified BAR and the user space pointer. The pointer is necessary as an application may map the same BAR several times.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>XX pd_readConfigXX( pd_device_t *pci_handle, unsigned int addr );</code></td>
+<td>Read a {Byte|Word|DWord} from the configuration space of the device, at address <code>addr</code></td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_writeConfigXX( pd_device_t *pci_handle, unsigned int addr, XX val );</code></td>
+<td>Writes a value <code>val</code> into the address <code>addr</code> of the device.</td>
+</tr>
+
+
+</table>
+
+
+<!-- Subsection -->
+<table>
+<tr>
+<td span=2><b>Kernel Memory functions</b></td>
+</tr>
+<!-- function -->
+<tr>
+<td><code>void *pd_allocKernelMemory( pd_device_t *pci_handle, unsigned int size, pd_kmem_t *kmem_handle );</code></td>
+<td>Requests to the PCI device identified by <code>pci_handle</code> to allocate a block of kernel memory of <code>size</code> bytes, and initializes the descriptor <code>kmem_handle</code> accordingly.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_freeKernelMemory( pd_kmem_t *kmem_handle );</code></td>
+<td>Releases a block of kernel memory identified by <code>kmem_handle</code>.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_syncKernelMemory( pd_kmem_t *kmem_handle, int dir );</code></td>
+<td>Requests an explicit synchronize between the kernel memory and the device. Typically this is never necessary, as kernel memory is allocated as coherent memory and therfore is not cached, but may be useful for debugging, or required in other platforms. Possible values for direction are <em>PD_DIR_BIDIRECTIONAL</em>, <em>PD_DIR_TODEVICE</em>, <em>PD_DIR_FROMDEVICE</em>.</td>
+</tr>
+
+</table>
+
+<!-- Subsection -->
+<table>
+<tr>
+<td span=2><b>User Memory functions</b></td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_mapUserMemory( pd_device_t *pci_handle, void *mem, unsigned int size, pd_umem_t *umem_handle );</code></td>
+<td>Requests to the PCI device identified by <code>pci_handle</code> to map the user memory area pointed by <code>mem</code> and of <code>size</code> bytes in size, to be locked into physical memory and mapped to the device space. It then builds the Scatter/Gather list of the memory and initializes the descriptor <code>umem_handle</code> accordingly.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_unmapUserMemory( pd_umem_t *umem_handle );</code></td>
+<td>Releases a block of user memory identified by <code>umem_handle</code>. The memory is not deallocated, as it belongs to the process, but it is unlocked and can be rellocated afterwards, so the SG list becomes invalid.</td>
+</tr>
+
+<!-- function -->
+<tr>
+<td><code>int pd_syncUserMemory( pd_umem_t *umem_handle, int dir );</code></td>
+<td>Requests an explicit synchronize between the user memory and the device. Typically this is necessary only when the same buffer is used for multiple DMA operations, one after another, to ensure cache coherency. PCI bus snooping may render this unnecessary in several platforms, but it is required in others. Use of this function allows the application to issue a memory barrier explicitly, permitting several memory optimizations for the CPU side when a DMA operation is not involved. Possible values for direction are <em>PD_DIR_BIDIRECTIONAL</em>, <em>PD_DIR_TODEVICE</em>, <em>PD_DIR_FROMDEVICE</em>.</td>
+</tr>
+
+</table>
+
+</div>
+
+<!-- Section -->
+<div id="ioctl">
+<h2>Using the Driver - IOctl interface</h2>
+<p>Oh man... you like things the hard way? ok, here it goes... but you will end up doing the same as in the C interface.</p>
+</div>
+
+
+<!-- Section -->
+<div id="sysfs">
+<h2>Using the Driver - SysFS interface</h2>
+<p>The SysFS interface is a new addition to this driver. It provides access to the driver status, and provides a mechanism
+to interact with the device in a limited fashion. In particular, it allows to see the currently allocated buffers, release
+a buffer in case you application didn't (for example, after a crash), and even allows for allocating kernel buffers directly.
+Mapping of user memory is not possible, and information on each buffer is in progress (as soon as I figure out some tricky
+details of the SysFS interface).</p>
+
+<p>An attribute can be read by simply cat'ing it, and can be written by echo'ing to it. As follows:</p>
+<pre><code>
+	$ cat kbuffers
+	$ echo 10240 > kmem_alloc
+</code></pre>
+The currently available info is:</p>
+
+<table>
+<tr>
+<td span=2><b>SysFS interface</b></td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>/sys/class/fpga/fpgaX/</code></td>
+<td>Directory for each device class. Each device allocated by the driver is enumerated and one directory assigned to it.
+X is the device number.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>device/</code></td>
+<td>A symlink to the PCI entry in SysFS for this device. In kernel 2.6.13+, the device allows to mmap the BARs directly.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>driver/</code></td>
+<td>A symlink to the device driver entry in SysFS. Here just for informational porpouses.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>irq_count</code></td>
+<td>List the number of interrupts received by this device since the driver was loaded.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>kbuffers</code></td>
+<td>List the currently allocated kernel buffers, with ID, physical address and size. It has a limit of 1 page output 
+(4KB typical), so for a high number of buffers the output may be truncated.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>kmem_alloc</code></td>
+<td>Allocates a Kernel Buffer based in the input size. Example: To allocate a 10KB buffer, do <code>echo 10240 > kmem_alloc</code></td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>kmem_count</code></td>
+<td>Returns the internal counter of kernel buffers. It can be seen as the number of kernel buffers allocated since the driver started.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>kmem_free</code></td>
+<td>Release a kernel buffer. Receives the kernel ID as listed by <code>kbuffers</code>. Example: To release the buffer with ID 3, do 
+<code>echo 3 > kmem_free</code></td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>kbufXX</code></td>
+<td>Represents a kernel buffer. In future versions, if will be possible to mmap it directly.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>mmap_area</code></td>
+<td>The internal mmap_area variable. Used when in mmap_mode=PCI, sets the BAR to be mmaped.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>mmap_mode</code></td>
+<td>The internal mmap_mode variable. Determines if a mmap command will map a PCI region or a Kernel buffer. Reading it returns the current value of the variable.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>umappings</code></td>
+<td>List the currently mapped user areas, with ID, size and number of pages. It has a limit of 1 page output 
+(4KB typical), so for a high number of mappings the output may be truncated.</td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>umem_unmap</code></td>
+<td>Unmap a user memory area. Receives the user ID as listed by <code>umappings</code>. Example: To unmap the buffer with ID 3, do 
+<code>echo 3 > umem_unmap</code></td>
+</tr>
+
+<!-- entry -->
+<tr>
+<td><code>umemXX</code></td>
+<td>Represents a user memory mapping. In future versions, if will be possible to get the SG list directly from it.</td>
+</tr>
+
+</table>
+
+
+</div>
+
+<!-- Section -->
+<div id="dev">
+<h2>Developer's Manual</h2>
+<p>In progress... do you need it?</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+INSTALLATION INSTRUCTIONS FOR THE PCIDRIVER
+
+2006 - Guillermo Marcus
+Lehrstuhl fuer Informatik V - Universitaet Mannheim
+
+Version 0.2
+November 13th, 2006
+
+
+Contents
+--------
+
+1. Quick steps
+2. Detailed steps
+
+For more information, check the HTML manual, manual.html.
+
+
+
+1. Quick steps
+--------------
+
+For the impatient:
+
+	$ tar xvzf pciDriver.tar.gz
+	$ cd pciDriver
+	$ make all
+	$ su -
+	# make install	
+
+Loading the driver : # insmod pciDriver/src/driver/pciDriver.ko
+Compiling a program: Add -lpcidriver to your linker.
+
+
+2. Detailed steps
+-----------------
+
+First, unpack the driver and compile:
+
+
+	$ tar xvzf pciDriver.tar.gz
+	$ cd pciDriver
+	$ make all
+
+For regular use, you may want to do:
+
+	$ su
+	# make install
+
+This will copy the driver to the /lib/modules/(uname -r)/extra directory, 
+the library files (both dynamic and static) to the /usr/lib directory, 
+and will install the defaults permissions for the device 
+in /etc/udev/permissions.d.
+
+The driver itself does not requires any special library, but it is highly 
+recommended that the provided interfaces being used for easy development 
+and future compability. To load the driver:
+
+	$ su
+	# insmod pciDriver/src/driver/pciDriver.ko
+
+To unload it
+
+	$ su
+	# rmmod pciDriver
+
+To use in your application, you need to make an explicit include to the 
+pciDriver/include directory by adding it to the compiler and include the 
+pciDriver library by adding -lpcidriver to your linker. If you didn't 
+install the library in the default directory using make install, you need 
+to add the pciDriver/lib directory to the linker path both at link and 
+runtime, by example, by adding it to the LD_LIBRARY_PATH variable. 
+Therefore, a C++ test program that uses the driver interface will be 
+compiled as
+
+ $ g++ -IpciDriver/include -LpciDriver/lib -lpcidriver -o test.bin test.cpp
+
+To add the library path and execute the test
+
+
+	$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/pciDriver/lib
+	$ ./test.bin
+
+If your card has no native support from the driver, you can add the Vendor 
+and Device ID dynamically to the driver after loading it, by issuing 
+the command
+
+	# echo "vendor device" > /sys/bus/pci/drivers/pciDriver/new_id
+
+You can obtain a list of the PCI devices in your machine, and then the vendor 
+and device IDs, with:
+
+	# lspci
+	# pcitweak -l
+
+Example:
+	# lspci
+02:03.0 Class ffff: PLX Technology, Inc. 9080 (rev 03)
+03:03.0 VGA compatible controller: ATI Technologies Inc RV280 [Radeon 9200 SE] (rev 01)
+03:03.1 Display controller: ATI Technologies Inc RV280 [Radeon 9200 SE] (Secondary) (rev 01)
+
+this is ours>>>>> 04:02.0 Co-processor: PLX Technology, Inc. PCI <-> IOBus Bridge (rev ab)
+         note this^^^^^^^
+
+04:03.0 SCSI storage controller: Adaptec AIC-7902 U320 (rev 03)
+
+	# pcitweak -l
+	PCI: 04:02:0: chip 10b5,9656 card 2151,1087 rev ab class 0b,40,00 hdr 00
+                     vendor^^^^,^^^^device 
+

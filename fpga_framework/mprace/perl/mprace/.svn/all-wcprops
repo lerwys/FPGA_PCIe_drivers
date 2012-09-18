@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/asc/mprace/!svn/ver/130/trunk/perl/mprace
+END
+typemap
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/typemap
+END
+mprace.xs
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/mprace.xs
+END
+mprace.o
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/mprace.o
+END
+perlobject.map
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/perlobject.map
+END
+MANIFEST
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/MANIFEST
+END
+pm_to_blib
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/pm_to_blib
+END
+Makefile.PL
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/Makefile.PL
+END
+mprace.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/mprace.c
+END
+Changes
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/Changes
+END
+Makefile.old
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/asc/mprace/!svn/ver/78/trunk/perl/mprace/Makefile.old
+END
+mprace.bs
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/mprace.bs
+END
+ppport.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/ppport.h
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/asc/mprace/!svn/ver/77/trunk/perl/mprace/README
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/asc/mprace/!svn/ver/130/trunk/perl/mprace/Makefile
+END
