@@ -1,0 +1,11 @@
+Repository containing PCIe drivers for FPGA interface
+
+===============================================
+
+The project is based on tools and projects developed originally by
+ opencores and others:
+
+opencores_driver:
+	http://opencores.org/project,pcie_ds_dma
+
+===============================================
