@@ -25,7 +25,7 @@ INCDIR += ../../include
 LDINC += $(addprefix -L ,$(LIBDIR))
 LDFLAGS += -lpcidriver
 
-#BINARIES = testCppInterface testCompatInterface
+BINARIES = testCppInterface testCompatInterface
 
 ###############################################################
 # Target definitions
@@ -40,15 +40,15 @@ $(BINARIES) : % : $(BINDIR)/% ;
 # Target for each exec from the object file
 $(BINDIR)/%: $(OBJDIR)/%.o
 	@echo -e "LD \t$@"
-	$(Q)$(CXX) $(LDINC) $(LDFLAGS) $(CXXFLAGS) -o $@ $<
+	$(Q)$(CXX) $(LDINC) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
 $(BINDIR)/testCinterface: $(OBJDIR)/testCinterface.o
 	@echo -e "LD \t$@"
-	$(Q)$(CC) $(LDINC) $(LDFLAGS) $(CFLAGS) -o $@ $<
+	$(Q)$(CC) $(LDINC) $(CFLAGS) -o $@ $< $(LDFLAGS) 
 
 $(BINDIR)/testPciDriver: $(OBJDIR)/testPciDriver.o
 	@echo -e "LD \t$@"
-	$(Q)$(CC) $(LDINC) $(LDFLAGS) $(CFLAGS) -o $@ $<
+	$(Q)$(CC) $(LDINC) $(CFLAGS) -o $@ $< $(LDFLAGS) 
 
 clean:
 	@echo -e "CLEAN \t$(shell pwd)"

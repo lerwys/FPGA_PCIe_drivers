@@ -9,3 +9,15 @@ opencores_driver:
 	http://opencores.org/project,pcie_ds_dma
 
 ===============================================
+
+Known Issues:
+
+Perhaps this is just a Ubuntu problem, but libraries must be listed 
+after the objects that use them. They will only be used if it contains
+a symbol that satisfies an undifined referenced know at the time is it
+ encountered. Source: http://stackoverflow.com/questions/10456581/
+undefined-reference-to-symbol-even-when-nm-indicates-that-this-symbol-
+is-present
+	Because of this, the Makefile located at opencores_driver/src/tests
+was modified in order to move the libraries dependencies to the end
+of the command
